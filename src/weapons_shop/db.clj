@@ -14,3 +14,8 @@
         weapon-with-id (assoc weapon :id id)]
     (swap! fake-db assoc (str id) weapon-with-id)
     weapon-with-id))
+
+(defn delete-weapon [id]
+  (when-let [weapon (@fake-db id)]
+    (swap! fake-db dissoc id)
+    weapon))

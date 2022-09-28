@@ -36,6 +36,11 @@
         (bad-request {:message "Invalid input JSON" :error error})
         (response/response (db/new-weapon weapon)))))
 
+  (w/DELETE "/weapon/:id" [id]
+    (if (db/delete-weapon id)
+      (response/response "")
+      (response/not-found "")))
+
   (route/not-found "Not Found"))
 
 (def app

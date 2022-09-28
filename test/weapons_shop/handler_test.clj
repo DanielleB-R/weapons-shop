@@ -34,9 +34,19 @@
       (is (:id body))
       (reset! weapon-id (:id body))))
 
+  (def weapon-url (str "/weapon/" @weapon-id))
+
   (testing "GET that weapon back"
-    (let [response (app (mock/request :get (str "/weapon/" @weapon-id)))
+    (let [response (app (mock/request :get weapon-url))
           body (json/parse-string (:body response) true)]
       (is (= (:status response) 200))
       (is (= (:id body) @weapon-id))
-      (is (= (:name body) "Test Sword")))))
+      (is (= (:name body) "Test Sword"))))
+
+  (testing "DELETE the weapon"
+    (let [response (app (mock/request :delete weapon-url))]
+      (is (= (:status response) 200))))
+
+  (testing "GET the weapon and it's gone"
+    (let [response (app (mock/request :get weapon-url))]
+      (is (= (:status response) 404)))))
