@@ -1,0 +1,16 @@
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:14
+    expose:
+      - 5432
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=weapon-shop
+      - POSTGRES_PASSWORD=weapon-shop
