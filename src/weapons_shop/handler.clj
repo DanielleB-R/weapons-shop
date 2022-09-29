@@ -36,6 +36,15 @@
         (bad-request {:message "Invalid input JSON" :error error})
         (response/response (db/new-weapon weapon)))))
 
+  (w/PUT "/weapon/:id" {:keys [:body :params]}
+    (let [id (:id params)
+          weapon (coerce-weapon-input body)]
+      (if (s-utils/error-val weapon)
+        (bad-request {:message "Invalid input JSON"})
+        (if-let [new-weapon (db/update-weapon id (assoc weapon :id (Integer/parseInt id)))]
+          (response/response new-weapon)
+          (response/not-found "")))))
+
   (w/DELETE "/weapon/:id" [id]
     (if (db/delete-weapon id)
       (response/response "")

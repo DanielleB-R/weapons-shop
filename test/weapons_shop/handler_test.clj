@@ -27,7 +27,7 @@
 
   (testing "POST a new weapon"
     (let [response (app (-> (mock/request :post "/weapon")
-                             (mock/json-body {:name "Test Sword" :damage 5 :cost 100})))
+                            (mock/json-body {:name "Test Sword" :damage 5 :cost 100})))
           body (json/parse-string (:body response) true)]
       (is (= (:status response) 200))
       (is (= (:name body) "Test Sword"))
@@ -42,6 +42,14 @@
       (is (= (:status response) 200))
       (is (= (:id body) @weapon-id))
       (is (= (:name body) "Test Sword"))))
+
+  (testing "PUT a change"
+    (let [response (app (-> (mock/request :put weapon-url)
+                            (mock/json-body {:name "Super Test Sword" :damage 10 :cost 400})))
+          body (json/parse-string (:body response) true)]
+      (is (= (:status response) 200))
+      (is (= (:id body) @weapon-id))
+      (is (= (:name body) "Super Test Sword"))))
 
   (testing "DELETE the weapon"
     (let [response (app (mock/request :delete weapon-url))]

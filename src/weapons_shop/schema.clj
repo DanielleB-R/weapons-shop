@@ -10,3 +10,13 @@
 
 (def coerce-weapon-input
   (coercer WeaponInput json-coercion-matcher))
+
+(s/defschema Weapon
+  {(s/optional-key :id) s/Num
+   :name s/Str
+   :damage s/Num
+   :cost s/Num
+   (s/optional-key :durability) s/Num})
+
+(def coerce-weapon
+  (coercer Weapon json-coercion-matcher))
