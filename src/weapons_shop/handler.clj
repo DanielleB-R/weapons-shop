@@ -9,12 +9,10 @@
             [weapons-shop.schema :refer [coerce-weapon-input]]
             [weapons-shop.db :as db]))
 
-;; (defmacro with-coerced [[name coerce-result] & body]
-;;   (let [error (gensym)]
-;;     `(let [~name ~coerce-result]
-;;        (if-let [~error (s-utils/error-val ~name)]
-;;          (response/bad-request {:message "Invalid input JSON" :error ~error})
-;;          (do ~@body)))))
+(defmacro when-let-or-404 [binding-form & body]
+  `(if-let ~binding-form
+     (do ~@body)
+     (response/not-found "")))
 
 (defn- bad-request [body]
   (-> (response/response body)
@@ -23,12 +21,15 @@
 (w/defroutes app-routes
   (w/GET "/" [] (response/response {:hello "World"}))
 
+  (w/GET "/health" []
+    (db/check-database)
+    (response/response {:ok true}))
+
   (w/GET "/weapon" [] (response/response {:weapons (db/get-all-weapons)}))
 
   (w/GET "/weapon/:id" [id]
-    (if-let [weapon (db/get-weapon-by-id id)]
-      (response/response weapon)
-      (response/not-found "")))
+    (when-let-or-404 [weapon (db/get-weapon-by-id id)]
+      (response/response weapon)))
 
   (w/POST "/weapon" {:keys [:body]}
     (let [weapon (coerce-weapon-input body)]
@@ -41,9 +42,8 @@
           weapon (coerce-weapon-input body)]
       (if (s-utils/error-val weapon)
         (bad-request {:message "Invalid input JSON"})
-        (if-let [new-weapon (db/update-weapon id (assoc weapon :id (Integer/parseInt id)))]
-          (response/response new-weapon)
-          (response/not-found "")))))
+        (when-let-or-404 [new-weapon (db/update-weapon id (assoc weapon :id (Integer/parseInt id)))]
+          (response/response new-weapon)))))
 
   (w/DELETE "/weapon/:id" [id]
     (if (db/delete-weapon id)

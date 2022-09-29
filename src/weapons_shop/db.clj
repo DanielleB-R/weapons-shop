@@ -1,4 +1,6 @@
-(ns weapons-shop.db)
+(ns weapons-shop.db
+  (:require [clojure.java.jdbc :as j]
+            [weapons-shop.config :refer [db-config-dev]]))
 
 (def fake-db (atom {}))
 (def next-id (atom 0))
@@ -24,3 +26,6 @@
   (when-let [weapon (@fake-db id)]
     (swap! fake-db dissoc id)
     weapon))
+
+(defn check-database []
+  (j/query db-config-dev ["select 1;"]))
