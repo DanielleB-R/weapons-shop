@@ -29,7 +29,7 @@
 
   (w/GET "/weapon/:id" [id]
     (when-let-or-404 [weapon (db/get-weapon-by-id id)]
-      (response/response weapon)))
+                     (response/response weapon)))
 
   (w/POST "/weapon" {:keys [:body]}
     (let [weapon (coerce-weapon-input body)]
@@ -43,7 +43,7 @@
       (if (s-utils/error-val weapon)
         (bad-request {:message "Invalid input JSON"})
         (when-let-or-404 [new-weapon (db/update-weapon id (assoc weapon :id (Integer/parseInt id)))]
-          (response/response new-weapon)))))
+                         (response/response new-weapon)))))
 
   (w/DELETE "/weapon/:id" [id]
     (if (db/delete-weapon id)

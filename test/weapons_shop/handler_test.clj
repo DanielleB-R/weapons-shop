@@ -17,11 +17,11 @@
       (is (= (:status response) 404)))))
 
 (deftest test-weapon-api
-  (testing "GET all empty"
-    (let [response (app (mock/request :get "/weapon"))
-          body (json/parse-string (:body response) true)]
-      (is (= (:status response) 200))
-      (is (= (:weapons body) []))))
+  ;; (testing "GET all empty"
+  ;;   (let [response (app (mock/request :get "/weapon"))
+  ;;         body (json/parse-string (:body response) true)]
+  ;;     (is (= (:status response) 200))
+  ;;     (is (= (:weapons body) []))))
 
   (def weapon-id (atom nil))
 
@@ -46,6 +46,13 @@
   (testing "PUT a change"
     (let [response (app (-> (mock/request :put weapon-url)
                             (mock/json-body {:name "Super Test Sword" :damage 10 :cost 400})))
+          body (json/parse-string (:body response) true)]
+      (is (= (:status response) 200))
+      (is (= (:id body) @weapon-id))
+      (is (= (:name body) "Super Test Sword"))))
+
+  (testing "GET that change back"
+    (let [response (app (mock/request :get weapon-url))
           body (json/parse-string (:body response) true)]
       (is (= (:status response) 200))
       (is (= (:id body) @weapon-id))
