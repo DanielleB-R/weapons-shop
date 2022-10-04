@@ -64,4 +64,13 @@
 
   (testing "GET the weapon and it's gone"
     (let [response (app (mock/request :get weapon-url))]
+      (is (= (:status response) 404))))
+
+  (testing "Try to PUT the weapon and it's gone"
+    (let [response (app (-> (mock/request :put weapon-url)
+                            (mock/json-body {:name "Test Sword" :damage 5 :cost 100})))]
+      (is (= (:status response) 404))))
+
+  (testing "DELETE the weapon again and it's gone"
+    (let [response (app (mock/request :delete weapon-url))]
       (is (= (:status response) 404)))))
